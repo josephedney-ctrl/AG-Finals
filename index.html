@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Big Dawgs Gotta Eat</title>
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="icon" href="icon-512.png">
+<meta name="theme-color" content="#08090b">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Big Dawgs">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #08090b;
+    --panel: #111318;
+    --panel-border: #21252d;
+    --accent: #2fb4ff;
+    --accent-soft: rgba(47,180,255,0.14);
+    --accent-dim: #1c7fa8;
+    --text: #f2f4f6;
+    --text-muted: #8b93a1;
+    --text-faint: #565c68;
+    --divider: #1b1f26;
+    --radius: 10px;
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .display {
+    font-family: 'Oswald', 'Arial Narrow', sans-serif;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+  }
+
+  #app {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 0 48px;
+    opacity: 1;
+    animation: settle 420ms ease-out;
+  }
+
+  @keyframes settle {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  header.top {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    background: rgba(8,9,11,0.92);
+    backdrop-filter: saturate(140%) blur(10px);
+    border-bottom: 1px solid var(--divider);
+    padding: 16px 20px 0;
+  }
+
+  .brand {
+    margin-bottom: 14px;
+  }
+
+  .brand-title {
+    font-family: 'Oswald', sans-serif;
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: 0.015em;
+    color: var(--text);
+  }
+
+  .brand-sub {
+    font-size: 12.5px;
+    color: var(--text-faint);
+    margin-top: 2px;
+  }
+
+  nav.tabs {
+    display: flex;
+    gap: 4px;
+    overflow-x: auto;
+    scroll-snap-type: x proximity;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    padding-bottom: 2px;
+  }
+
+  nav.tabs::-webkit-scrollbar { display: none; }
+
+  .tab {
+    scroll-snap-align: start;
+    flex: 0 0 auto;
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    font-family: 'Oswald', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    letter-spacing: 0.01em;
+    padding: 10px 14px 12px;
+    cursor: pointer;
+    position: relative;
+    white-space: nowrap;
+    transition: color 160ms ease;
+  }
+
+  .tab:hover { color: var(--text); }
+  .tab.active { color: var(--accent); }
+
+  .tab-underline {
+    position: absolute;
+    bottom: 0;
+    height: 2px;
+    background: var(--accent);
+    border-radius: 2px;
+    transition: transform 260ms cubic-bezier(.4,0,.2,1), width 260ms cubic-bezier(.4,0,.2,1);
+  }
+
+  main { padding: 24px 20px 0; }
+
+  .panels {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+
+  @media (min-width: 760px) {
+    .panels { grid-template-columns: 0.86fr 1fr; align-items: start; }
+  }
+
+  .panel {
+    background: var(--panel);
+    border: 1px solid var(--panel-border);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+
+  .panel-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-faint);
+    padding: 12px 16px 0;
+  }
+
+  .image-panel {
+    background: #000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px;
+  }
+
+  .image-panel img {
+    width: 100%;
+    height: auto;
+    display: block;
+    border-radius: 4px;
+  }
+
+  .notes-panel { display: flex; flex-direction: column; min-height: 100%; }
+
+  .notes-body {
+    padding: 14px 16px 16px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .notes-box {
+    flex: 1;
+    min-height: 220px;
+    outline: none;
+    font-size: 15px;
+    line-height: 1.55;
+    color: var(--text);
+    padding-top: 10px;
+  }
+
+  .notes-box:empty::before {
+    content: attr(data-placeholder);
+    color: var(--text-faint);
+  }
+
+  .save-hint {
+    font-size: 11px;
+    color: var(--accent-dim);
+    height: 14px;
+    margin-top: 8px;
+    opacity: 0;
+    transition: opacity 300ms ease;
+  }
+
+  .save-hint.show { opacity: 1; }
+
+  .pr-panel {
+    margin-top: 18px;
+    padding: 14px 16px 16px;
+  }
+
+  .pr-add-row {
+    display: flex;
+    gap: 8px;
+    margin-top: 10px;
+    align-items: center;
+  }
+
+  .pr-input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid var(--panel-border);
+    color: var(--text);
+    font-family: 'Oswald', sans-serif;
+    font-size: 20px;
+    font-weight: 500;
+    padding: 6px 2px 8px;
+    outline: none;
+  }
+
+  .pr-input:focus { border-bottom-color: var(--accent); }
+  .pr-input::placeholder { color: var(--text-faint); font-weight: 400; }
+
+  .pr-log-btn {
+    background: var(--accent);
+    color: #051018;
+    border: none;
+    border-radius: 7px;
+    font-family: 'Inter', sans-serif;
+    font-size: 13.5px;
+    font-weight: 600;
+    padding: 10px 16px;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+
+  .pr-log-btn:hover { background: #4dc4ff; }
+
+  .pr-log-list {
+    margin-top: 14px;
+  }
+
+  .pr-log-empty {
+    font-size: 13px;
+    color: var(--text-faint);
+    padding: 8px 2px;
+  }
+
+  .pr-row {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 10px 2px;
+    border-top: 1px solid var(--divider);
+  }
+
+  .pr-row:first-child { border-top: none; }
+
+  .pr-row-left {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    min-width: 0;
+  }
+
+  .pr-row.latest .pr-row-value {
+    font-family: 'Oswald', sans-serif;
+    font-size: 24px;
+    font-weight: 600;
+    color: var(--accent);
+  }
+
+  .pr-row.latest .pr-row-date {
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+
+  .pr-row.past .pr-row-value {
+    font-family: 'Oswald', sans-serif;
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--text-faint);
+  }
+
+  .pr-row.past .pr-row-date {
+    font-size: 11.5px;
+    color: var(--text-faint);
+  }
+
+  .pr-row-del {
+    background: none;
+    border: none;
+    color: var(--text-faint);
+    font-size: 15px;
+    cursor: pointer;
+    padding: 4px 6px;
+    line-height: 1;
+    flex-shrink: 0;
+  }
+
+  .pr-row-del:hover { color: var(--text-muted); }
+
+  .brand-row {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px 12px;
+  }
+
+  .export-btn {
+    background: transparent;
+    border: 1px solid var(--panel-border);
+    color: var(--text-muted);
+    font-family: 'Inter', sans-serif;
+    font-size: 12.5px;
+    font-weight: 500;
+    border-radius: 7px;
+    padding: 7px 12px;
+    cursor: pointer;
+    white-space: nowrap;
+    flex-shrink: 0;
+    transition: border-color 160ms ease, color 160ms ease;
+  }
+
+  .export-btn:hover {
+    border-color: var(--accent-dim);
+    color: var(--text);
+  }
+
+  .export-hint {
+    font-size: 11px;
+    color: var(--accent-dim);
+    text-align: right;
+    height: 14px;
+    margin-top: 4px;
+    opacity: 0;
+    transition: opacity 300ms ease;
+  }
+
+  .export-hint.show { opacity: 1; }
+
+  footer.note {
+    max-width: 1100px;
+    margin: 28px auto 0;
+    padding: 0 20px;
+    font-size: 12px;
+    color: var(--text-faint);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    #app, .tab-underline, .save-hint { animation: none !important; transition: none !important; }
+  }
+</style>
+</head>
+<body>
+
+<div id="app">
+  <header class="top">
+    <div class="brand">
+      <div class="brand-row">
+        <div>
+          <div class="brand-title">Big Dawgs Gotta Eat</div>
+          <div class="brand-sub">Athlete Games Finals 2026 · Oct 17</div>
+        </div>
+        <div>
+          <button class="export-btn" id="exportBtn">Export notes</button>
+          <div class="export-hint" id="exportHint">Copied</div>
+        </div>
+      </div>
+    </div>
+    <nav class="tabs" id="tabs"></nav>
+  </header>
+
+  <main>
+    <div class="panels">
+      <div class="panel image-panel-wrap">
+        <div class="panel-label" id="imageLabel">Original workout card</div>
+        <div class="image-panel">
+          <img id="workoutImage" src="" alt="">
+        </div>
+      </div>
+      <div class="panel notes-panel">
+        <div class="panel-label">Training cues &amp; notes</div>
+        <div class="notes-body">
+          <div class="notes-box" id="notesBox" contenteditable="true" data-placeholder="Add cues here once you've run this one."></div>
+          <div class="save-hint" id="saveHint">Saved</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel pr-panel">
+      <div class="panel-label" style="padding:0 0 2px;">PR log</div>
+      <div class="pr-add-row">
+        <input class="pr-input" id="prInput" type="text" inputmode="text" placeholder="e.g. 4:45" />
+        <button class="pr-log-btn" id="prLogBtn">Log PR</button>
+      </div>
+      <div class="pr-log-list" id="prLogList"></div>
+    </div>
+  </main>
+
+  <footer class="note">Notes and PR times are saved to this browser only. Each person's copy stays private to their own phone.</footer>
+</div>
+
+<script>
+  const workouts = [{"id": "w1", "name": "A Walk in the Park", "num": "Workout #1", "img": "Images/w1.jpg"}, {"id": "w2", "name": "Partition Party", "num": "Workout #2", "img": "Images/w2.jpg"}, {"id": "w3", "name": "King of the Hill", "num": "Workout #3", "img": "Images/w3.jpg"}, {"id": "w4", "name": "Black Diamond", "num": "Workout #4", "img": "Images/w4.jpg"}, {"id": "w5", "name": "Pull Your Weight", "num": "Workout #5", "img": "Images/w5.jpg"}, {"id": "final", "name": "End of the Road", "num": "Final Workout", "img": "Images/final.jpg"}];
+
+  const tabsEl = document.getElementById('tabs');
+  const imageEl = document.getElementById('workoutImage');
+  const imageLabelEl = document.getElementById('imageLabel');
+  const notesEl = document.getElementById('notesBox');
+  const saveHintEl = document.getElementById('saveHint');
+  const prInputEl = document.getElementById('prInput');
+  const prLogBtnEl = document.getElementById('prLogBtn');
+  const prLogListEl = document.getElementById('prLogList');
+  const exportBtnEl = document.getElementById('exportBtn');
+  const exportHintEl = document.getElementById('exportHint');
+
+  let activeId = null;
+  let saveHintTimer = null;
+  let notesDebounce = null;
+
+  function storageKey(id, field) {
+    return 'bdge2026_' + field + '_' + id;
+  }
+
+  function flashSaved() {
+    saveHintEl.classList.add('show');
+    clearTimeout(saveHintTimer);
+    saveHintTimer = setTimeout(() => saveHintEl.classList.remove('show'), 1400);
+  }
+
+  function todayLabel() {
+    const d = new Date();
+    return d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+  }
+
+  function loadPrLog(id) {
+    try {
+      const raw = localStorage.getItem(storageKey(id, 'prlog'));
+      return raw ? JSON.parse(raw) : [];
+    } catch (e) { return []; }
+  }
+
+  function savePrLog(id, log) {
+    localStorage.setItem(storageKey(id, 'prlog'), JSON.stringify(log));
+  }
+
+  function renderPrLog(id) {
+    const log = loadPrLog(id);
+    prLogListEl.innerHTML = '';
+    if (log.length === 0) {
+      const empty = document.createElement('div');
+      empty.className = 'pr-log-empty';
+      empty.textContent = 'No PR logged yet.';
+      prLogListEl.appendChild(empty);
+      return;
+    }
+    log.forEach((entry, idx) => {
+      const row = document.createElement('div');
+      row.className = 'pr-row ' + (idx === 0 ? 'latest' : 'past');
+
+      const left = document.createElement('div');
+      left.className = 'pr-row-left';
+      const val = document.createElement('span');
+      val.className = 'pr-row-value';
+      val.textContent = entry.value;
+      const date = document.createElement('span');
+      date.className = 'pr-row-date';
+      date.textContent = entry.date;
+      left.appendChild(val);
+      left.appendChild(date);
+
+      const del = document.createElement('button');
+      del.className = 'pr-row-del';
+      del.textContent = '\u00d7';
+      del.setAttribute('aria-label', 'Remove this entry');
+      del.addEventListener('click', () => {
+        const current = loadPrLog(id);
+        current.splice(idx, 1);
+        savePrLog(id, current);
+        renderPrLog(id);
+      });
+
+      row.appendChild(left);
+      row.appendChild(del);
+      prLogListEl.appendChild(row);
+    });
+  }
+
+  function addPrEntry() {
+    const val = prInputEl.value.trim();
+    if (!val) return;
+    const log = loadPrLog(activeId);
+    log.unshift({ value: val, date: todayLabel() });
+    savePrLog(activeId, log);
+    prInputEl.value = '';
+    renderPrLog(activeId);
+    flashSaved();
+  }
+
+  function htmlToPlainText(html) {
+    if (!html) return '';
+    const tmp = document.createElement('div');
+    tmp.innerHTML = html
+      .replace(/<div>/gi, '\n')
+      .replace(/<br\s*\/?>/gi, '\n');
+    const text = tmp.textContent || '';
+    return text.replace(/\n{3,}/g, '\n\n').trim();
+  }
+
+  function buildExportText() {
+    const lines = [];
+    lines.push('Big Dawgs Gotta Eat — notes backup');
+    lines.push('Exported ' + new Date().toLocaleString(undefined, { month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit' }));
+    lines.push('');
+
+    workouts.forEach((w) => {
+      lines.push('== ' + w.num + ': ' + w.name + ' ==');
+
+      const notesHtml = localStorage.getItem(storageKey(w.id, 'notes'));
+      const notesText = htmlToPlainText(notesHtml);
+      lines.push('Notes:');
+      lines.push(notesText ? notesText : '(none yet)');
+
+      const log = loadPrLog(w.id);
+      lines.push('PR log:');
+      if (log.length === 0) {
+        lines.push('(none yet)');
+      } else {
+        log.forEach(entry => lines.push('  ' + entry.value + ' — ' + entry.date));
+      }
+      lines.push('');
+    });
+
+    return lines.join('\n');
+  }
+
+  function showExportHint(msg) {
+    exportHintEl.textContent = msg;
+    exportHintEl.classList.add('show');
+    setTimeout(() => exportHintEl.classList.remove('show'), 2200);
+  }
+
+  async function doExport() {
+    const text = buildExportText();
+    const fileName = 'big-dawgs-notes-backup.txt';
+
+    if (navigator.share) {
+      try {
+        if (navigator.canShare && navigator.canShare({ files: [new File([text], fileName, { type: 'text/plain' })] })) {
+          await navigator.share({
+            files: [new File([text], fileName, { type: 'text/plain' })],
+            title: 'Big Dawgs Gotta Eat — notes backup'
+          });
+          return;
+        }
+        await navigator.share({ title: 'Big Dawgs Gotta Eat — notes backup', text: text });
+        return;
+      } catch (err) {
+        // user cancelled the share sheet, or share failed, fall through to clipboard
+      }
+    }
+
+    try {
+      await navigator.clipboard.writeText(text);
+      showExportHint('Copied — paste into Notes or Mail');
+      return;
+    } catch (err) {
+      // clipboard blocked, fall back to a plain download link
+    }
+
+    const blob = new Blob([text], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = fileName;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
+
+  function renderTabs() {
+    tabsEl.innerHTML = '';
+    workouts.forEach((w) => {
+      const btn = document.createElement('button');
+      btn.className = 'tab';
+      btn.textContent = w.name;
+      btn.setAttribute('aria-label', w.num + ': ' + w.name);
+      btn.dataset.id = w.id;
+      btn.addEventListener('click', () => selectWorkout(w.id));
+      tabsEl.appendChild(btn);
+    });
+    const underline = document.createElement('div');
+    underline.className = 'tab-underline';
+    underline.id = 'tabUnderline';
+    tabsEl.appendChild(underline);
+  }
+
+  function moveUnderline(tabEl) {
+    const underline = document.getElementById('tabUnderline');
+    if (!tabEl || !underline) return;
+    underline.style.width = tabEl.offsetWidth + 'px';
+    underline.style.transform = 'translateX(' + tabEl.offsetLeft + 'px)';
+  }
+
+  function selectWorkout(id) {
+    activeId = id;
+    const w = workouts.find(x => x.id === id);
+
+    [...tabsEl.querySelectorAll('.tab')].forEach(t => {
+      t.classList.toggle('active', t.dataset.id === id);
+      if (t.dataset.id === id) moveUnderline(t);
+    });
+
+    imageEl.src = w.img;
+    imageEl.alt = w.num + ', ' + w.name;
+    imageLabelEl.textContent = w.num + ' \u00b7 ' + w.name;
+
+    const savedNotes = localStorage.getItem(storageKey(id, 'notes'));
+    notesEl.innerHTML = savedNotes || '';
+
+    prInputEl.value = '';
+    renderPrLog(id);
+
+    history.replaceState(null, '', '#' + id);
+  }
+
+  notesEl.addEventListener('input', () => {
+    clearTimeout(notesDebounce);
+    notesDebounce = setTimeout(() => {
+      localStorage.setItem(storageKey(activeId, 'notes'), notesEl.innerHTML);
+      flashSaved();
+    }, 500);
+  });
+
+  prLogBtnEl.addEventListener('click', addPrEntry);
+  prInputEl.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') { e.preventDefault(); addPrEntry(); }
+  });
+
+  exportBtnEl.addEventListener('click', doExport);
+
+  window.addEventListener('resize', () => {
+    const activeTab = tabsEl.querySelector('.tab.active');
+    moveUnderline(activeTab);
+  });
+
+  renderTabs();
+  const startId = (location.hash || '').replace('#', '') || workouts[0].id;
+  const initial = workouts.find(w => w.id === startId) ? startId : workouts[0].id;
+  selectWorkout(initial);
+</script>
+
+</body>
+</html>
